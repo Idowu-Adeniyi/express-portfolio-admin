@@ -36,3 +36,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Visit http://localhost:${PORT} to test the app`);
 });
+
+// This is a small change to trigger redeploy
+console.log("Redeploy triggered");
