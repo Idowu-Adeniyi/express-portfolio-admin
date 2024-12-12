@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public")));
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    console.log("Connected to MongoDB Atlas");
+    console.log("Connected to MongoDB Atlas online");
   })
   .catch((err) => {
     console.error("Error connecting to MongoDB", err);
@@ -36,6 +36,3 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Visit http://localhost:${PORT} to test the app`);
 });
-
-// This is a small change to trigger redeploy
-console.log("Redeploy triggered");
