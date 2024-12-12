@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Page</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f7f7f7;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .form-container,
+      .table-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      form {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      #message {
+        margin-top: 20px;
+        font-weight: bold;
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container form-container">
+      <h2>Add Project</h2>
+      <form id="projectForm">
+        <label for="name">Project Name:</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="viewLink">View Link:</label>
+        <input type="text" id="viewLink" name="viewLink" />
+
+        <label for="githubLink">GitHub Link:</label>
+        <input type="text" id="githubLink" name="githubLink" />
+
+        <label for="image">Project Image:</label>
+        <input type="file" id="image" name="image" />
+
+        <label for="languages">Languages Used:</label>
+        <input type="text" id="languages" name="languages" required />
+
+        <button type="submit">Add Project</button>
+      </form>
+
+      <h2>Add Skill</h2>
+      <form id="skillForm">
+        <label for="language">Language:</label>
+        <input type="text" id="language" name="language" required />
+
+        <label for="percentage">Percentage:</label>
+        <input type="number" id="percentage" name="percentage" required />
+
+        <button type="submit">Add Skill</button>
+      </form>
+    </div>
+
+    <div class="container table-container">
+      <h2>Projects</h2>
+      <table id="projectsTable">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Languages</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h2>Skills</h2>
+      <table id="skillsTable">
+        <thead>
+          <tr>
+            <th>Language</th>
+            <th>Percentage</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="message"></div>
+
+    <script>
+      async function fetchProjects() {
+        const response = await fetch("/projects");
+        const projects = await response.json();
+        const projectsTableBody = document
+          .getElementById("projectsTable")
+          .querySelector("tbody");
+        projectsTableBody.innerHTML = "";
+        projects.forEach((project) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td><img src="${project.image}" alt="${
+            project.name
+          }" width="50"></td>
+                    <td>${project.name}</td>
+                    <td>${project.languages.join(", ")}</td>
+                    <td>
+                        <button onclick="deleteProject('${
+                          project._id
+                        }')">Delete</button>
+                        <button onclick="editProject('${project._id}', '${
+            project.name
+          }', '${project.description}', '${project.viewLink}', '${
+            project.githubLink
+          }', '${project.languages.join(", ")}')">Edit</button>
+                    </td>
+                `;
+          projectsTableBody.appendChild(row);
+        });
+      }
+
+      async function fetchSkills() {
+        const response = await fetch("/skills");
+        const skills = await response.json();
+        const skillsTableBody = document
+          .getElementById("skillsTable")
+          .querySelector("tbody");
+        skillsTableBody.innerHTML = "";
+        skills.forEach((skill) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${skill.name}</td>
+                    <td>${skill.percentage}</td>
+                    <td>
+                        <button onclick="deleteSkill('${skill._id}')">Delete</button>
+                        <button onclick="editSkill('${skill._id}', '${skill.name}', '${skill.percentage}')">Edit</button>
+                    </td>
+                `;
+          skillsTableBody.appendChild(row);
+        });
+      }
+
+      async function deleteProject(id) {
+        await fetch(`/projects/delete/${id}`, {
+          method: "DELETE",
+        });
+        fetchProjects();
+      }
+
+      function editProject(
+        id,
+        name,
+        description,
+        viewLink,
+        githubLink,
+        languages
+      ) {
+        document.getElementById("name").value = name;
+        document.getElementById("description").value = description;
+        document.getElementById("viewLink").value = viewLink;
+        document.getElementById("githubLink").value = githubLink;
+        document.getElementById("languages").value = languages;
+        document.getElementById("projectForm").dataset.id = id;
+        document.querySelector("#projectForm button").textContent =
+          "Update Project";
+      }
+
+      async function deleteSkill(id) {
+        await fetch(`/skills/delete/${id}`, {
+          method: "DELETE",
+        });
+        fetchSkills();
+      }
+
+      function editSkill(id, language, percentage) {
+        document.getElementById("language").value = language;
+        document.getElementById("percentage").value = percentage;
+        document.getElementById("skillForm").dataset.id = id;
+        document.querySelector("#skillForm button").textContent =
+          "Update Skill";
+      }
+
+      document
+        .getElementById("projectForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const id = event.target.dataset.id;
+
+          if (id) {
+            await fetch(`/projects/edit/${id}`, {
+              method: "PUT",
+              body: formData,
+            });
+            document.querySelector("#projectForm button").textContent =
+              "Add Project";
+            event.target.removeAttribute("data-id");
+          } else {
+            await fetch("/projects/add", {
+              method: "POST",
+              body: formData,
+            });
+          }
+
+          document.getElementById("message").textContent =
+            "Project saved successfully";
+          fetchProjects();
+        });
+
+      document
+        .getElementById("skillForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const formDataObj = Object.fromEntries(formData);
+          const id = event.target.dataset.id;
+
+          if (id) {
+            await fetch(`/skills/edit/${id}`, {
+              method: "PUT",
+              body: JSON.stringify(formDataObj),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            document.querySelector("#skillForm button").textContent =
+              "Add Skill";
+            event.target.removeAttribute("data-id");
+          } else {
+            await fetch("/skills/add", {
+              method: "POST",
+              body: JSON.stringify(formDataObj),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+          }
+
+          document.getElementById("message").textContent =
+            "Skill saved successfully";
+          fetchSkills();
+        });
+
+      fetchProjects();
+      fetchSkills();
+    </script>
+  </body>
+</html>
