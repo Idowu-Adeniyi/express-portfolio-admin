@@ -7,7 +7,6 @@ const path = require("path");
 const projectRoutes = require("./routes/projectRoutes");
 const skillRoutes = require("./routes/skillRoutes");
 const contactRoute = require("./router/contactRoute");
-const nodemailer = require("nodemailer");
 
 dotenv.config();
 
@@ -33,7 +32,7 @@ mongoose
 // Routes
 app.use("/projects", projectRoutes);
 app.use("/skills", skillRoutes);
-app.use("/api/contact", contactRoute);
+app.use("/", contactRoute);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
