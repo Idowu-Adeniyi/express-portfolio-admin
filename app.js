@@ -7,6 +7,7 @@ const path = require("path");
 const projectRoutes = require("./routes/projectRoutes");
 const skillRoutes = require("./routes/skillRoutes");
 const contactRoute = require("./router/contactRoute");
+const nodemailer = require("nodemailer");
 
 dotenv.config();
 
