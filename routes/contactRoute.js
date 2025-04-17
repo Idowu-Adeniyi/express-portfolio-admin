@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const router = express.Router();
 require("dotenv").config();
 
-router.post("/api/contact", async (req, res) => {
+router.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
 
   const transporter = nodemailer.createTransport({
