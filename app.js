@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 const projectRoutes = require("./routes/projectRoutes");
 const skillRoutes = require("./routes/skillRoutes");
-const contactRoute = require("./router/contactRoute");
+const contactRoute = require("./routes/contactRoute");
 
 dotenv.config();
 
