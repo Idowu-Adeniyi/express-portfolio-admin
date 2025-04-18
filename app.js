@@ -32,7 +32,7 @@ mongoose
 // Routes
 app.use("/projects", projectRoutes);
 app.use("/skills", skillRoutes);
-app.use("/api", contactRoute);
+app.use("/", contactRoute);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
